@@ -1,9 +1,10 @@
 package com.jmt.ai.controllers;
 
+import com.jmt.global.rests.JSONData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,14 +17,15 @@ public class ChatController {
     private final OpenAiChatModel openAiChatModel;
     private final VertexAiGeminiChatModel geminiChatModel;
 
-    @GetMapping
-    public void chat(@RequestParam("message") String message) {
-      //String openAiResponse = openAiChatModel.call(message);
 
-      String geminiResponse = geminiChatModel.call(message);
+    @RequestMapping("/")
+    public JSONData chat(@RequestParam(name="message", required = false) String message) {
+        if (!StringUtils.hasText(message)) {
+            throw new IllegalArgumentException("메세지를 입력하세요.");
+        }
 
-     // System.out.println(openAiResponse);
-      System.out.println(geminiResponse);
+        String openAiResponse = openAiChatModel.call(message);
 
+        return new JSONData(openAiResponse);
     }
 }
